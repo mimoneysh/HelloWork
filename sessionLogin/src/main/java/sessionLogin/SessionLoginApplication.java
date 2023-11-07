@@ -10,13 +10,6 @@ public class SessionLoginApplication {
 		SpringApplication.run(SessionLoginApplication.class, args);
 		//just first comment
 		System.out.println("who cares");
-		System.out.println("who cares");
-		System.out.println("who cares");
-		System.out.println("who cares");
-		System.out.println("who cares");
-		System.out.println("who cares");
-		System.out.println("who cares");
-		System.out.println("who cares");
 	}
 
 }
