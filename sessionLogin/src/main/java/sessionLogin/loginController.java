@@ -1,5 +1,8 @@
 package sessionLogin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +25,7 @@ import org.springframework.core.io.ClassPathResource;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class loginController {
@@ -67,6 +71,21 @@ public class loginController {
 		
 	  
 	 }
+	 
+	 
+	 @GetMapping("/")
+		public String process(Model model, HttpSession session) {
+			@SuppressWarnings("unchecked")
+			List<String> messages = (List<String>) session.getAttribute("MY_SESSION_MESSAGES");
+
+			if (messages == null) {
+				messages = new ArrayList<>();
+				System.out.println("Hello from begning!");
+			}
+			model.addAttribute("sessionMessages", messages);
+			System.out.println("Hello from process!");
+			return "login";
+		}
 	
 
 	    @PostMapping("/login")
@@ -74,6 +93,7 @@ public class loginController {
 	        if ("user".equals(username) && "password".equals(password)) {
 	            // Successful login, set a session attribute to mark the user as authenticated
 	            request.getSession().setAttribute("user", username);
+	            System.out.println("Login successful!");
 	            return "redirect:/home";
 	        } else {
 	            // Invalid credentials, redirect back to the login page with an error message
