@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login Page</h1>
+    <form th:action="@{/login}" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <p th:if="${param.error}">Invalid credentials. Please try again.</p>
+    
+        <h1>Generate OR code</h1>
+    <form th:action="@{/generateQRCode}" method="get">
+        <label for="text">Input:</label>
+        <input type="text" id="text" name="text">
+        <br>
+        
+        <button type="submit">Generate</button>
+    </form>
+   
+        
+
+
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+
+        /* Container for the two columns */
+        .container {
+            display: flex;
+        }
+        
+        .custom-readonly {
+  		color:darkcyan; /* Change this to the color you desire */
+		}
+
+        /* Style for the left column (Search) */
+        .right-column {
+            width: 35%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Style for the right column (Add New Book) */
+        .left-column {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Style for the right column (Add New Book) */
+        .middle-column {
+            width: 30%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+
+        .two-column-form {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .column {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+
+          
+  

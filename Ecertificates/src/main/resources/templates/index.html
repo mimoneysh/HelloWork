@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+    <title>Home E-Certificates</title>
+     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Rubik:400,700'>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+</head>
+<body>
+    <div style="text-align: center;">
+        <h1 display=" center">Home </h1>
+        <h2>E-Certificates</h2>
+        
+    </div>
+
+    <div class="container">
+        <!-- Left Column: Search by serialNumber -->
+        <div class="left-column">
+            <h2>Add New E-Certificate</h2>
+            <div>
+            <form id="addEcert" class="two-column-form">
+                <div class="column">
+                    <label for="newSN">Serial Number:<strong>(*)</strong></label>
+                    <input type="text" id="newSN" required>
+                    <br>
+                    <label for="newEmail">Email:<strong>(*)</strong></label>
+                    <input type="text" id="newEmail" required>
+                    <br>
+                    <label for="newCN">Common Name:</label>
+                    <input type ="text" id="newCN" required>
+                    <br>
+                    <label for="newC">Country:</label>
+                    <input type="text" id="newC" required>
+                    <br>
+                    <label for="newO">Organization:</label>
+                    <input type="text" id="newO" required>
+                    <br>
+                    <label for="newOU">Organizational Unit:</label>
+                    <input type="text" id="newOU" required>
+                    <br>
+                </div>
+                <div class="column">
+                    <label for="newtelephoneNumber">Telephone Number:</label>
+                    <input type="text" id="newtelephoneNumber" required>
+                    <br>
+                    <label for="newST">State:</label>
+                    <input type="text" id="newST" required>
+                    <br>
+                    <label for="newSignatureAlgorithm">Signature Algorithm:<strong>(*)</strong></label>
+                    <input type="text" id="newSignatureAlgorithm" required>
+                    <br>
+                    <label for="newSignatureParameters">Signature Parameters:<strong>(*)</strong></label>
+                    <input type="text" id="newSignatureParameters" required>
+                    <br>
+                    <label for="newSignature">Signature:<strong>(*)</strong></label>
+                    <input type="text" id="newSignature" required>
+                    <br>
+                </div>
+                <br>
+            </div>
+            <div>
+				<i style="color: red;">You cannot leave (*) these fields</i>
+            </div>
+                <div>
+                <button type="submit">Add E-Certificate</button>
+                </div>
+            </form>
+            
+        </div>
+
+        <!-- Right Column: Search by serialNumber -->
+        <div class="right-column">
+            <h2>Search by SerialNumber</h2>
+            <input type="text" id="searchSerialNumber" placeholder="Enter serialNumber">
+            <button onclick="searchEcert()">Search</button>
+            <div id="searchResult"></div>
+        </div>
+        
+        
+        <div class="middle-column" id="editEcert" style="display: none;" >
+		    <h2>Edit E-Certificate</h2>	    
+            <div>
+            <div class="column">
+                <label for="editSN">Serial Number:<strong>(*)</strong></label>
+                <input type="text" id="editSN" readonly class="custom-readonly">
+                <br>
+                <label for="editEmail">Email:<strong>(*)</strong></label>
+                <input type="text" id="editEmail" readonly class="custom-readonly">
+                <br>
+                <label for="editCN">Common Name:</label>
+                <input type="text" id="editCN" required>
+                <br>
+                <label for="editC">Country:</label>
+                <input type="text" id="editC" required>
+                <br>
+                <label for="editO">Organization:</label>
+                <input type="text" id="editO" required>
+                <br>
+                <label for="editOU">Organizational Unit:</label>
+                <input type="text" id="editOU" required>
+                <br>
+            </div>
+            <div class="column">
+                <label for="edittelephoneNumber">Telephone Number:</label>
+                <input type="text" id="edittelephoneNumber" required>
+                <br>
+                <label for="editST">State:</label>
+                <input type="text" id="editST" required>
+                <br>
+                <label for="editSignatureAlgorithm">Signature Algorithm:<strong>(*)</strong></label>
+                <input type="text" id="editSignatureAlgorithm" readonly class="custom-readonly">
+                <br>
+                <label for="newSignatureParameters">Signature Parameters:<strong>(*)</strong></label>
+                <input type="text" id="editSignatureParameters" readonly class="custom-readonly">
+                <br>
+                <label for="newSignature">Signature:<strong>(*)</strong></label>
+                <input type="text" id="editSignature" readonly class="custom-readonly">
+                <br>
+            </div>
+
+            </div>
+
+
+            <div>
+				<i style="color: darkcyan;">You cannot change (*) these fields</i>
+            </div>
+			<div>
+
+		    <button onclick="saveEditedCert()">Save</button>
+		    
+             </div>
+		</div>
+		
+		<!-- Display a confirmation popup -->
+		<div id="confirmationPopup" style="display: none;">
+		    <p>Details saved successfully.</p>
+		    <button onclick="closePopup()">OK</button>
+		</div>
+        
+        
+        
+        
+    </div>
+
+    <!-- Table for Display -->
+    <h2>E-Certificates List</h2>
+    <div id="paging">
+        <button onclick="prevPage()">Previous</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+				<th>Row Number</th>
+                <th>Serial Number</th>
+                <th>Email</th>
+                <th>Common Name</th>
+                <th>Country</th>
+                <th>Organization</th>
+                <th>Organizational Unit</th>
+                <th>Telephone Number</th>
+                <th>State</th>
+                <th>Signature Algorithm</th>
+                <th>Signature Parameters</th>
+                <th>Signature</th>
+                <th>Actions</th>
+                
+                
+
+            </tr>
+        </thead>
+        <tbody id="ecertList">
+           
+        </tbody>
+    </table>
+ <script type="text/javascript"  th:src="@{/js/script.js}"></script>
+    
+</body>
+</html>
+
+
+      

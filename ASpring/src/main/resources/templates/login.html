@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Login Page</title>
+</head>
+<body>
+	<h2>Login Page</h2>
+	<p>Welcome!!</p>
+    <form th:action="@{/login-form}" method="post">
+        <label for="loginId">Login ID:</label>
+        <input type="text" id="loginId" name="loginId" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Login">
+    </form>
+    
+        <p>Don't have an account? <a href="signup">Sign up</a></p>
+
+
+</body>
+</html>

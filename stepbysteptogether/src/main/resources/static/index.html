@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book CRUD Operations</title>
+    <style>
+        /* Container for the two columns */
+        .container {
+            display: flex;
+        }
+
+        /* Style for the left column (Search) */
+        .right-column {
+            width: 35%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Style for the right column (Add New Book) */
+        .left-column {
+            width: 35%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Style for the right column (Add New Book) */
+        .middle-column {
+            width: 30%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book CRUD Operations</h1>
+
+    <div class="container">
+        <!-- Left Column: Search by Book ID -->
+        <div class="left-column">
+            <h2>Add New Book</h2>
+            <form id="addBookForm">
+                <label for="newId">Book ID:</label>
+                <input type="text" id="newId" required>
+                <br>
+                <label for="newName">Book Name:</label>
+                <input type="text" id="newName" required>
+                <br>
+                <label for="newPrice">Price:</label>
+                <input type="number" step="0.01" id="newPrice" required>
+                <br>
+                <button type="submit">Add Book</button>
+            </form>
+        </div>
+
+        <!-- Right Column: Search by Book ID -->
+        <div class="right-column">
+            <h2>Search by Book ID</h2>
+            <input type="number" id="searchBookId" placeholder="Enter Book ID">
+            <button onclick="searchBook()">Search</button>
+            <div id="searchResult"></div>
+        </div>
+        
+        
+        <div class="middle-column" id="editBookForm" style="display: none;">
+		    <h2>Edit Book</h2>
+		    <label for="editId">Book ID:</label>
+		    <input type="text" id="editId" readonly>
+		    <br>
+		    <label for="editName">Book Name:</label>
+		    <input type="text" id="editName">
+		    <br>
+		    <label for="editPrice">Price:</label>
+		    <input type="number" step="0.01" id="editPrice">
+		    <br>
+		    <button onclick="saveEditedBook()">Save</button>
+		</div>
+		
+		<!-- Display a confirmation popup -->
+		<div id="confirmationPopup" style="display: none;">
+		    <p>Details saved successfully.</p>
+		    <button onclick="closePopup()">OK</button>
+		</div>
+        
+        
+        
+        
+    </div>
+
+    <!-- Table for Display -->
+    <h2>Book List</h2>
+    <div id="paging">
+        <button onclick="prevPage()">Previous</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Book Name</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="bookList">
+            <!-- Book data will be displayed here -->
+        </tbody>
+    </table>
+
+    <script>
+        const maxRows = 10; // Maximum rows to display per page
+        let currentPage = 1;
+
+        // Function to display books in the table
+        function displayBooks(books) {
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * maxRows;
+            const endIndex = currentPage * maxRows;
+
+            for (let i = startIndex; i < endIndex && i < books.length; i++) {
+                const book = books[i];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.book_id}</td>
+                    <td>${book.book_name}</td>
+                    <td>$${book.price.toFixed(2)}</td>
+                    <td>
+                        <button onclick="editBook(${book.book_id})">Edit</button>
+                        <button onclick="deleteBook(${book.book_id})">Delete</button>
+                    </td>
+                `;
+                bookList.appendChild(row);
+            }
+        }
+
+        // Function to search for a book by ID
+        function searchBook() {
+            const bookId = parseInt(document.getElementById('searchBookId').value, 10);
+
+            // Make an AJAX request to retrieve book details by ID from the Spring Boot controller
+            fetch(`/gbd/${bookId}`)
+                .then(response => response.json())
+                .then(data => {
+					//console.log(data); // Log the contents of the 'data' object to the console.
+
+                    if (data.statusCode === 1 && data.message === 'book details found' && data.book) {
+		                const bookData = data.book;
+		                document.getElementById('searchResult').innerText = `Found Book: ID: ${bookData.book_id}, 
+		                Book Name: ${bookData.book_name}, Price: $${bookData.price.toFixed(2)}`;
+		                console.log("Book found");
+		            } else {
+		                console.log(data); // Log the contents of the 'data' object to the console.
+		                document.getElementById('searchResult').innerText = 'Book not found.';
+		            }
+		                })
+                .catch(error => {
+                    console.error("Error searching for book:", error);
+                });
+        }
+
+        // Function to add a new book
+        document.getElementById('addBookForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const newId = document.getElementById('newId').value;
+            const newName = document.getElementById('newName').value;
+            const newPrice = parseFloat(document.getElementById('newPrice').value);
+
+            // Make an AJAX request to add a new book using the Spring Boot controller
+            fetch('/createbook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: newId,
+                    book_name: newName,
+                    price: newPrice
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data === true) {
+                        // Book added successfully, refresh the book list
+                        fetchBookList();
+                    } else {
+                        console.error("Error adding book:", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error adding book:", error);
+                });
+        });
+
+        // Function to delete a book
+        function deleteBook(bookId) {
+			const book_id=parseInt(bookId, 10);
+            // Make an AJAX request to delete a book using the Spring Boot controller
+            fetch(`/del/${book_id}`, {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                 .then(data => {
+                    if (data === true) {
+                        // Book deleted successfully, refresh the book list
+                        fetchBookList();
+                    } else {
+                        console.error("Error deleting book:", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting book:", error);
+                });
+        }
+
+        
+
+        // Function to fetch the book list
+        let books = [];
+        function fetchBookList() {
+            // Make an AJAX request to retrieve the list of books from the Spring Boot controller
+            fetch('/list')
+                .then(response => response.json())
+                .then(data => {
+                    // Display the list of books
+                     books = data;
+                    displayBooks(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching book list:", error);
+                });
+        }
+
+        // Function to navigate to the previous page
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayBooks(books);
+            }
+        }
+
+        // Function to navigate to the next page
+        function nextPage() {
+            const totalPages = Math.ceil(books.length / maxRows);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayBooks(books);
+            }
+        }
+        
+        
+        // Function to open the edit form and populate it with book details
+    function editBook(bookId) {
+        const book = books.find(b => b.book_id === bookId);
+        if (book) {
+            document.getElementById('editId').value = book.book_id;
+            document.getElementById('editName').value = book.book_name;
+            document.getElementById('editPrice').value = book.price;
+            document.getElementById('editBookForm').style.display = 'block';
+        }
+    }
+
+    // Function to save edited book details
+    function saveEditedBook() {
+        const editedId = document.getElementById('editId').value;
+        const editedName = document.getElementById('editName').value;
+        const editedPrice = parseFloat(document.getElementById('editPrice').value);
+
+        // Make an AJAX request to save the edited book using the Spring Boot controller
+        fetch('/updatebook', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                book_id: editedId,
+                book_name: editedName,
+                price: editedPrice
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+				
+                if (data === true) {					
+					
+                    // Book details saved successfully
+                    document.getElementById('confirmationPopup').style.display = 'block';
+                } else {
+                    console.error("Error saving book details:", data);
+                }
+            })
+            .catch(error => {
+                console.error("Error saving book details:", error);
+            });
+    }
+
+    // Function to close the confirmation popup and refresh the page
+    function closePopup() {
+        document.getElementById('confirmationPopup').style.display = 'none';
+        document.getElementById('editBookForm').style.display = 'none';
+        fetchBookList(); // Refresh the book list
+    }
+
+        // Display books when the page loads
+        fetchBookList();
+    </script>
+</body>
+</html>
+
+
+      
